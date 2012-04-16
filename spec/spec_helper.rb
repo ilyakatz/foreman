@@ -47,6 +47,20 @@ def write_procfile(procfile="Procfile", alpha_env="")
   File.expand_path(procfile)
 end
 
+def write_advanced_procfile(procfile="Procfile", alpha_env="")
+  File.open(procfile, "w") do |file|
+    file.puts "development: "
+    file.puts "  alpha_dev: ./alpha" + " #{alpha_env}".rstrip
+    file.puts "\n"
+    file.puts "  bravo_dev:\t./bravo dev"
+    file.puts "test: "
+    file.puts "  alpha_test: ./alpha" + " #{alpha_env}".rstrip
+    file.puts "\n"
+    file.puts "  bravo_test:\tbundle exec rake resque:work QUEUE=* &"
+  end
+  File.expand_path(procfile)
+end
+
 def write_env(env=".env", options={"FOO"=>"bar"})
   File.open(env, "w") do |file|
     options.each do |key, val|

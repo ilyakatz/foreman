@@ -1,5 +1,5 @@
 require "foreman/version"
-
+require 'yaml'
 module Foreman
 
   class AppDoesNotExist < Exception; end

@@ -21,7 +21,7 @@ class Foreman::Engine
   Foreman::Color.enable($stdout)
 
   def initialize(procfile, options={})
-    @procfile  = Foreman::Procfile.new(procfile)
+    @procfile  = Foreman::Procfile.new(procfile, :slice=>options[:slice])
     @directory = options[:app_root] || File.expand_path(File.dirname(procfile))
     @options = options.dup
     @environment = read_environment_files(options[:env])

@@ -7,3 +7,5 @@
 /pkg
 /tags
 /vendor
+Procfile
+.idea

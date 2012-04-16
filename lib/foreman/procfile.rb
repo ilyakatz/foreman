@@ -1,6 +1,8 @@
 require "foreman"
 require "foreman/procfile_entry"
 
+YAML::ENGINE.yamler = 'psych'
+
 # A valid Procfile entry is captured by this regex.
 # All other lines are ignored.
 #
@@ -13,8 +15,8 @@ class Foreman::Procfile
 
   attr_reader :entries
 
-  def initialize(filename)
-    @entries = parse_procfile(filename)
+  def initialize(filename, options={})
+    @entries = parse_procfile(filename, options)
   end
 
   def [](name)
@@ -25,14 +27,21 @@ class Foreman::Procfile
     entries.map(&:name)
   end
 
-private
+  private
 
-  def parse_procfile(filename)
-    File.read(filename).split("\n").map do |line|
-      if line =~ /^([A-Za-z0-9_]+):\s*(.+)$/
-        Foreman::ProcfileEntry.new($1, $2)
-      end
-    end.compact
+  def parse_procfile(filename, options={})
+    opts = if options[:slice].nil?
+             ::YAML.load(ERB.new(File.read(filename)).result)
+           else
+             ::YAML.load(ERB.new(File.read(filename)).result)[options[:slice]]
+           end
+    if opts
+      opts.map { |name, command|
+        Foreman::ProcfileEntry.new(name, command)
+      }.compact
+    else
+      []
+    end
   end
 
 end
